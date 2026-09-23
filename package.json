@@ -1,0 +1,17 @@
+{
+  "name": "barcode-audit",
+  "version": "1.0.0",
+  "private": true,
+  "description": "多重测序条码双层次优子库审计（反向互补汉明距离、BigInt 同优计数、必选/可选/从不选归属）",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test test/*.test.js",
+    "build": "node scripts/build.js",
+    "smoke": "node scripts/smoke.js",
+    "verify": "node scripts/verify.js"
+  }
+}

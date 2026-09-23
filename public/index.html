@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>多重测序条码子库审计</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>多重测序条码子库审计</h1>
+    <p class="subtitle">
+      任一条码与另一条码在正向 / 反向互补四种组合下的最小汉明距离低于阈值即互斥；
+      自身反向互补距离不足者不得入选。求解器精确选出
+      <strong>优先权总和最大</strong>、继而<strong>记录数最多</strong>的子库，
+      并给出任意精度的同优方案数与必选 / 可选 / 从不选归属。
+    </p>
+  </header>
+
+  <main class="layout">
+    <section class="panel" aria-label="录入">
+      <h2>录入（10–44 条）</h2>
+      <label class="field-label" for="threshold">距离阈值（正整数）</label>
+      <input id="threshold" name="threshold" inputmode="numeric" value="3" />
+
+      <label class="field-label" for="records">
+        每行一条：<code>条码 优先权</code>（条码为等长 ACGT，优先权为正整数，可任意长）
+      </label>
+      <textarea id="records" name="records" spellcheck="false" rows="16"
+        placeholder="ACGTACGT 10&#10;TTTTGGGG 3&#10;……"></textarea>
+
+      <div class="actions">
+        <button id="runBtn" type="button">启动审计</button>
+        <button id="cancelBtn" type="button" disabled>取消</button>
+        <button id="sampleBtn" type="button" class="ghost">填入示例</button>
+        <button id="clearBtn" type="button" class="ghost">清空</button>
+      </div>
+      <p id="statusLine" class="status" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="panel" aria-label="结论">
+      <h2>最近一次成功结论</h2>
+      <div id="summary" class="summary empty">尚无成功结论。</div>
+
+      <h3 class="table-title">逐记录归属</h3>
+      <div class="table-wrap">
+        <table id="resultTable">
+          <thead>
+            <tr>
+              <th>#</th><th>条码</th><th>反向互补</th><th>优先权</th>
+              <th>自/RC 距离</th><th>对他最小距离</th>
+              <th>归属</th><th>规范结果</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <details>
+        <summary id="mutexSummary">互斥记录对</summary>
+        <ul id="mutexList" class="mutex-list"></ul>
+      </details>
+    </section>
+  </main>
+
+  <footer>
+    计算在浏览器内 Web Worker 完成；同优数量与位向量以 BigInt 精确表示。
+  </footer>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

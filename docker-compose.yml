@@ -1,0 +1,33 @@
+# Docker Compose：web 常驻服务（端口可配置）+ verify 单次校验服务。
+#
+# 端口映射：HOST_PORT 可配置（默认 8080），例如
+#   HOST_PORT=9090 docker compose up --build
+# 容器内固定监听 8080；健康检查在 Dockerfile 内声明（/health）。
+# verify 为单次服务：代码测试 → 构建检查 → HTTP 冒烟（容器内起临时服务器），
+# 以退出码报告成败：
+#   docker compose build
+#   docker compose run --rm verify
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: barcode-audit:latest
+    environment:
+      PORT: "8080"
+      HOST: "0.0.0.0"
+    ports:
+      # 宿主可配置端口 → 容器 8080
+      - "${HOST_PORT:-8080}:8080"
+    restart: unless-stopped
+
+  verify:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: barcode-audit:latest
+    # 单次服务：代码测试 → 构建检查 → HTTP 冒烟（冒烟自起临时服务器，
+    # 不设置 PORT 以便由系统分配空闲端口）
+    command: ["node", "scripts/verify.js"]
+    restart: "no"
